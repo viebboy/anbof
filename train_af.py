@@ -5,7 +5,7 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 import numpy as np
 import itertools
-import trainer
+import trainer as model_trainer
 import models
 
 class Dataset:
@@ -72,8 +72,8 @@ def get_AF_dataset(data_file, fold_idx, sample_length=30, standardize=True):
         x_train = (x_train - mean) / std
         x_test = (x_test - mean) / std
 
-    train_set = Dataset(x_train, y_train, 4)
-    test_set = Dataset(x_test, y_test, 4)
+    train_set = Dataset(x_train, y_train)
+    test_set = Dataset(x_test, y_test)
 
     return train_set, test_set, length, class_weight
 
@@ -116,14 +116,14 @@ def main(argv):
 
 
     train_set, val_set, series_length, class_weight = get_AF_dataset('AF.pickle', fold_idx, sample_length)
-    train_loader = Dataloader(train_set, batch_size=batch_size, pin_memory=True, shuffle=True)
-    val_loader = Dataloader(val_set, batch_size=batch_size, pin_memory=True, shuffle=False)
+    train_loader = DataLoader(train_set, batch_size=batch_size, pin_memory=True, shuffle=True)
+    val_loader = DataLoader(val_set, batch_size=batch_size, pin_memory=True, shuffle=False)
     test_loader = None
 
     dummy_x = train_set[0][0] 
     series_length = dummy_x.numpy().size
     
-    trainer = trainer.ClassifierTrainer(n_epoch=200, class_weight=class_weight) 
+    trainer = model_trainer.ClassifierTrainer(n_epoch=2, class_weight=class_weight, test_mode=True) 
 
 
     if quantization_type == 'nbof':

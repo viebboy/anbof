@@ -150,6 +150,8 @@ class ResNetPreprocessing(nn.Module):
 class Attention(nn.Module):
     def __init__(self, n_codeword, series_length, att_type):
         super(Attention, self).__init__()
+    
+        assert att_type in ['temporal', 'spatial']
 
         self.att_type = att_type
         self.att_dim = n_codeword if att_type == 'spatial' else series_length 
